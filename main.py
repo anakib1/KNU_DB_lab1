@@ -113,9 +113,11 @@ class Slave(Entity):
     def from_pos(self, pos:int):
         self.from_str(get_portion_of_file(SLAVE_FILE, pos, TOTAL_LEN_SLAVE))
         self.pos = pos
-
+import random
 def get_int(msg = 'Input id: '):
     z = input(msg)
+    if z == 'random':
+        z = str(random.randint(0, 100000 - 1))
     while not z.isnumeric():
         print('Input number please')
         z = input(msg)
@@ -200,6 +202,8 @@ class DB:
         write_portion_of_file(MASTER_FILE, pos, ' ' * TOTAL_LEN_MASTER)
 
     def del_s(self, id):
+        chel = self.slave_by_id(id)
+        self.index_ms[chel.master_id].remove(id)
         pos = self.index_s.pop(id)
         write_portion_of_file(SLAVE_FILE, pos, ' ' * TOTAL_LEN_SLAVE)
 
@@ -235,6 +239,8 @@ class DB:
                     self.index_m = x
                     self.index_s = y
                     self.index_ms = z
+                    self.cnt_m = len(self.index_m)
+                    self.cnt_s = len(self.index_s)
                     print('LOADED INDEX TABLE SUCCESSFULLY. No need to load files')
                     return
         print('No index table found. Building from scratch')
@@ -368,7 +374,7 @@ if __name__ == '__main__':
                 else:
                     val = get_int('Input new age: ')
                 db.upd_m(id, s, val)
-                print('Successfully cahnged director instance in DB')
+                print('Successfully changed director instance in DB')
             elif x == 8:
                 if(db.cnt_m == 0):
                     print('Directors DB is empty!')
